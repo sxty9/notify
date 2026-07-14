@@ -1,0 +1,21 @@
+{
+  "service": "notify",
+  "version": 1,
+  "categories": [
+    {
+      "id": "notify",
+      "label": "Notifications",
+      "description": "The platform-wide notification centre. Every user always sees their own notifications; the only gated capability is broadcasting to everyone.",
+      "permissions": [
+        {
+          "id": "admin",
+          "label": "Broadcast announcements",
+          "description": "Send a notification to all users (e.g. maintenance windows) and administer the notification service.",
+          "group": "hp_notify_admin",
+          "default": false,
+          "dangerous": true
+        }
+      ]
+    }
+  ]
+}
