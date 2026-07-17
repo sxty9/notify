@@ -5,61 +5,83 @@ _Automatisch aus Mercury ausgerollt. Nicht direkt bearbeiten; ändere die Axiome
 
 ## Axiome
 
-### architektur
-- **Führe keine Änderungen durch, die Redundanz schaffen oder** — Führe keine Änderungen durch, die Redundanz schaffen oder UI-Bloat erzeugen. Bevorzuge Refactoring des SDKs gegenüber lokalem Custom-Code.
+### architecture / minimalism
+- **Intuitiv by Design** — Das System ist intuitiv by Design: Die Oberfläche erklärt sich aus sich selbst. Hilfstexte, erläuternde Notizen und Tooltips entfallen; sie sind nur in seltenen, sachlich unvermeidbaren Ausnahmefällen zulässig.
+- **Keine ähnlichen Geschwister** — Funktionen mit ähnlichem Zweck werden unter einem gemeinsamen Zugang zusammengeführt, statt als getrennte, ähnliche Geschwister nebeneinander zu bestehen. Dies gilt innerhalb einer Codebase wie service-übergreifend und folgt aus dem Minimalism-Maxim.
+- **Keine Redundanz** — Keine Änderung darf Redundanz schaffen oder die Oberfläche aufblähen. Bestehende SDK-Bausteine werden refaktoriert und wiederverwendet, statt lokalen Sondercode zu duplizieren.
+- **Portionierte Daten** — Daten werden nicht im Überfluss dargestellt, sondern strikt portioniert und bedarfsgerecht — nur so viel, wie im jeweiligen Kontext benötigt wird.
 
-### architektur / minimalism
-- **Das System ist "intuitiv by Design"** — Das System ist "intuitiv by Design". Keine Hilfstexte, Notes oder Tooltips im UI (außer bei extremen Spezialfällen).
-- **Präsentiere Daten nicht im Überfluss, sondern strikt** — Präsentiere Daten nicht im Überfluss, sondern strikt portioniert und bedarfsgerecht.
+### architecture / passive-data-pools
+- **Passive Speicher** — Ein Data Pool ist ein reiner, passiver Speicher: Er hält Daten, ohne sie zu deuten, zu bewerten oder eigene Logik auszuführen. Jede Auswertung findet außerhalb des Pools statt.
 
-### architektur / passive-data-pools
-- **Data Pools denken und werten niemals** — Data Pools denken und werten niemals — genau wie `lakearch` und `scheme`. Sie sind reine, passive Speicher ohne eigene Logik oder Auswertung; jede Bewertung liegt außerhalb des Pools.
+### architecture / reuse-before-build
+- **Reuse before Build** — 1. Suche die benötigte Komponente zuerst im geteilten SDK. 2. Existiert eine ähnliche: erweitere die SDK-Komponente. 3. Existiert keine, wird sie aber domänenübergreifend gebraucht: baue sie im SDK. 4. Nur wenn sie hochspezifisch für genau diesen Service ist: baue sie lokal.
 
-### architektur / reuse-before-build
-- **Reuse before Build** — 1. Suche die Komponente im Holistic SDK. 2. Wenn ähnlich vorhanden: Erweitere die SDK-Komponente. 3. Wenn nicht vorhanden, aber domänenübergreifend: Baue sie im SDK. 4. Nur wenn hochspezifisch: Baue sie lokal in diesem Service.
+### architecture / single-source-of-truth
+- **Atomare Zugriffe** — Jeder lesende und schreibende Datenzugriff erfolgt atomar — unteilbar und ohne beobachtbaren Zwischenzustand.
+- **Zugangspunkt wiederverwenden** — Existiert für eine Entität bereits ein Zugangspunkt, ist er zwingend wiederzuverwenden. Parallele Datenpfade zur selben Entität werden niemals angelegt.
 
-### architektur / single-source-of-truth
-- **Existiert für die Entität bereits ein Zugangspunkt?** — Existiert für die Entität bereits ein Zugangspunkt? Zwingend wiederverwenden. Baue niemals parallele Datenpfade.
-- **Jede Datenabfrage und jedes Setzen von Daten ist atomar.** — Jede Datenabfrage und jedes Setzen von Daten ist atomar.
+### architecture / uniformity
+- **CLI** — Jeder Service stellt eine CLI bereit. Sie folgt in Syntax und Semantik strikt dem einheitlichen Holistic-CLI-Standard, sodass alle Service-CLIs sich gleich bedienen lassen.
+- **Code-Struktur** — Aufbau, Layout, Namenskonventionen und Repository-Grundgerüst eines Service entsprechen exakt denen der übrigen Holistic-Services. Struktur ist service-übergreifend uniform.
 
-### architektur / uniformity
-- **CLI** — CLI: Jeder Service stellt eine CLI bereit. Diese muss sich in Syntax und Semantik strikt an den Holistic-Standard halten. Nutze bestehende Holistic-Services als Referenz.
-- **Code-Struktur** — Code-Struktur: Syntaktischer Aufbau, Code-Layout, Naming-Conventions und Repository-Skeletons müssen exakt den anderen Holistic-Services entsprechen.
-- **Rechtesystem** — Rechtesystem: Einheitliches, symmetrisches Design. Jeder Service stellt ein Rechte-Manifest für den zentralen Privilege Service bereit. Feingranularität ist nur dort erlaubt, wo sie fachlich zwingend geboten ist.
+### environment
+- **Account-Löschung** — Der Account-Löschvorgang bündelt seine Optionen an einer Stelle und legt explizit fest, wie verbleibende Userdaten behandelt werden.
+- **Mehrsprachigkeit** — Alle sprachlichen Inhalte werden zeitnah in sämtliche unterstützten Holistic-Sprachen übersetzt. Die Sprache ist im UI jederzeit wählbar.
+- **Rechtelose Dienste verborgen** — Dienste, zu denen ein User keine Rechte besitzt, werden ihm im Dashboard nicht angezeigt.
+- **Rechtsklick-Menüs** — Wo ein Kontextmenü sinnvoll ist, wird es bereitgestellt — mit zweckmäßigen, nicht überflüssigen Einträgen, im Einklang mit dem Minimalism-Maxim.
+- **Service-übergreifende Tabs** — Tabs sind nicht an einen einzelnen Service gebunden: Mehrere Services können denselben Tab gemeinsam gestalten, und die Umgebung unterstützt dies.
+- **Tastaturnavigation in Listenelementen** — Alle listenartigen UI-Elemente, die mehrere Objekte enthalten, müssen sämtliche gängigen Tastaturkürzel unterstützen – insbesondere Kombinationen mit Cmd/Strg.
+- **Zustandserhalt beim Reload** — Aktualisiert der User eine Seite im Browser, ist der zuvor gewählte Zustand wiederherzustellen — derselbe Tab, dieselbe Ansicht und dieselbe Session (etwa ein Service-Tab oder eine Chat-Session). Der User arbeitet an derselben Stelle weiter und muss nicht erneut selbst dorthin navigieren.
 
-### gesetzbuecher
-- **Die Konvention der Überschriftenbenennung soll konsistent** — Die Konvention der Überschriftenbenennung soll konsistent sein   - Nicht z. B. "Der Geltungsbereich" und eine andere Überschrift "Kontext" durchmischen
-- **Es soll wissenschaftlich formuliert sein** — Es soll wissenschaftlich formuliert sein   - Jedes Gesetzbuch hat eine englische Fassung mit einer deutschen Übersetzung
-- **Seien nicht historisch gewachsen (organische Evolution** — Seien nicht historisch gewachsen (organische Evolution vermeiden; bewusst designte Struktur)
-- **Verwenden keine Beispiele (reine formale Definitionen,** — Verwenden keine Beispiele (reine formale Definitionen, keine illustrativen Fälle)
+### interfaces
+- **Kennzeichnungspflicht für KI-Modellantworten** — Jede Antwort auf einen KI-Prompt ist mit dem verwendeten Modell zu kennzeichnen.
+- **Konfiguration** — Jeder Service stellt seine Konfiguration als vollständige Schnittstelle bereit. Sämtliche Konfiguration und Einstellung — insbesondere durch Admins — erfolgt gebündelt im zentralen Dashboard in einem eigenen Tab, analog zur zentralen Rechteverwaltung, jedoch für Konfigurationen statt Rechte. Falsch eingeordnete Konfiguration wird umgehend dorthin umgeordnet. In den Service-Tabs steht die User-Experience im Zentrum; sie werden nicht mit Konfiguration überfrachtet.
+- **Leistungsbeanspruchung** — Jeder Service stellt seine Leistungsbeanspruchung als vollständige Schnittstelle bereit — seinen Bedarf an Rechenzeit, Arbeitsspeicher und weiteren Betriebsressourcen. Die Beanspruchung wird gebündelt im zentralen Dashboard sichtbar, analog zur zentralen Rechteverwaltung, sodass Last und Kapazität service-übergreifend beurteilt werden können. Der Service meldet seinen Verbrauch; die Bewertung liegt außerhalb. In den Service-Tabs steht die User-Experience im Zentrum, nicht die Last-Telemetrie.
+- **MCP** — Jeder Service stellt seine Fähigkeiten als vollständige MCP-Schnittstelle bereit — als Model-Context-Protocol-Server, über den Agenten die Funktionen des Service nutzen. Der Server ist einheitlich benannt und über die zentrale Infrastruktur adressierbar, analog zur zentralen Rechteverwaltung; seine Adresse liegt server-seitig und nie im Request, sodass kein manipulierter Aufruf einen Agenten auf einen fremden Host lenkt. Jede über MCP angebotene Fähigkeit ist durch das Rechtesystem gedeckt.
+- **Rechte** — Jeder Service stellt seine Rechte als vollständige Schnittstelle bereit — als Rechte-Manifest für die zentrale Rechteverwaltung. Jedes Recht ist symmetrisch aufgebaut und eins zu eins durch eine Systemgruppe gedeckt; Feingranularität nur dort, wo sie fachlich zwingend geboten ist. Vergabe und Verwaltung erfolgen gebündelt in der zentralen Rechteverwaltung, nicht in den einzelnen Service-Tabs. So bleibt das Rechtesystem über alle Services einheitlich und symmetrisch.
+- **Speichernutzung** — Jeder Service stellt seine Speichernutzung als vollständige Schnittstelle bereit — welche Daten er in welchem Umfang hält. Die Nutzung wird gebündelt im zentralen Dashboard sichtbar, analog zur zentralen Rechteverwaltung, sodass Belegung und Wachstum service-übergreifend nachvollziehbar sind. Der Service meldet nur; die Auswertung liegt außerhalb. In den Service-Tabs steht die User-Experience im Zentrum, nicht die Speicher-Telemetrie.
+- **Tiefe Implementierung von KI-Optionen** — Bei nichttrivialen Aufgaben sollen Usern KI-Optionen zur Verfügung stehen. Dies umfasst die gesamte Holistic-Servicelandschaft. Als Standard gilt hier der "Ask AI" Button, der durch den aigentic Service routet .Solange KI einen generelleren Use Case erfüllt, soll dieser "Ask AI" Standard verwendet werden. Im Falle eines spezifischeren Einsatzes, darf von diesem abgewägt werden.
 
-### mobile / klaerung-im-nachtlauf
-- **Klaerung Im Nachtlauf** — Innerhalb des autonomen Nachtlaufs ist die Klärungspflicht ausgesetzt. Ungelöste operative Lücken (fehlende Credentials, fehlender Build-Host, fehlendes Gerüst, fehlende Server-Voraussetzung) sind keine Rückfragen, sondern protokollierte, nicht-blockierende Übersprünge im Delivery-Report. Für interaktive Service-Arbeit außerhalb des Nachtlaufs bleibt die Klärungspflicht unverändert bestehen.
+### lawbooks
+- **Bewusst designt** — Ein axiomatisches System wird bewusst als Ganzes entworfen, nicht historisch gewachsen. Organische Evolution wird vermieden; die Struktur ist absichtsvoll gestaltet.
+- **Keine Beispiele** — Ein axiomatisches System verzichtet auf Beispiele. Es enthält ausschließlich formale Definitionen, keine illustrativen Einzelfälle.
+- **Konsistente Überschriften** — Die Benennung von Überschriften folgt einer einheitlichen Konvention. Gleichartige Abschnitte tragen gleichartige Titel; wechselnde Benennungsmuster oder Synonyme für dieselbe Rolle sind unzulässig.
+- **Wissenschaftliche Formulierung** — Ein axiomatisches System ist wissenschaftlich präzise formuliert und liegt in einer englischen Fassung mit deutscher Übersetzung vor.
 
 ### mobile / native-parity
-- **Daten, Logik, Rechte und i18n leben plattformneutral im** — Daten, Logik, Rechte und i18n leben plattformneutral im geteilten Paket @holistic/core und werden von Web- und Native-Apps identisch konsumiert. @holistic/core enthält keine React-DOM- oder Browser-Abhängigkeit.
-- **@holistic/ui-native spiegelt ausschließlich die visuelle** — @holistic/ui-native spiegelt ausschließlich die visuelle Komponenten-API von @holistic/ui (gleiche Export- und Prop-Namen) und rendert über native Widgets. Es entsteht keine zweite Logik-, Daten- oder Rechte-Implementierung.
-- **Native Apps authentisieren token-basiert (Bearer) gegen den** — Native Apps authentisieren token-basiert (Bearer) gegen den Origin des gekoppelten Servers; Same-Origin-Cookies und CSRF-Doppelabgabe entfallen. Der native Locale-Provider spiegelt die useT/useLocale-API, persistiert die Locale jedoch über gerätesicheren Speicher statt localStorage.
-- **Reuse-before-Build bleibt gewahrt** — Reuse-before-Build bleibt gewahrt: Die einzige zulässige Dopplung ist die technisch unteilbare visuelle Render-Schicht (Web-DOM gegen native Widgets). Der Reuse-und-SDK-Audit wertet diese Render-Spiegelung nicht als Duplizierung.
+- **Gespiegelte UI-API** — Das native UI-Paket spiegelt ausschließlich die visuelle Komponenten-API des Web-UI-Pakets — gleiche Export- und Prop-Namen — und rendert sie über native Widgets. Es entsteht dabei keine zweite Implementierung von Logik, Daten oder Rechten.
+- **Geteilter Core** — Daten, Logik, Rechte und Internationalisierung liegen plattformneutral im geteilten Core-Paket und werden von Web- und Native-Apps identisch konsumiert. Der Core enthält keine DOM- oder Browser-Abhängigkeit.
+- **Nur Render-Schicht doppelt** — Reuse-before-Build bleibt gewahrt: Die einzige zulässige Dopplung ist die technisch unteilbare visuelle Render-Schicht (Web-DOM gegenüber nativen Widgets). Der Reuse- und SDK-Audit wertet diese Render-Spiegelung nicht als Duplizierung.
+- **Token-Auth nativ** — Native Apps authentisieren sich token-basiert (Bearer) gegen den Origin des gekoppelten Servers; Same-Origin-Cookies und die CSRF-Doppelabgabe entfallen. Der native Locale-Provider spiegelt die Web-Locale-API, persistiert die Locale jedoch in gerätesicherem Speicher statt im Browser-Storage.
 
 ### mobile / per-app-distribution
-- **Abgrenzung zum Web-Tab-Modell** — Abgrenzung zum Web-Tab-Modell: Die Web-Regel, dass n Services einen Tab mitgestalten, bleibt für die Web-Oberfläche unverändert verbindlich. Mobil bildet jede Service-App ausschließlich den eigenen Service-Beitrag ab; service-übergreifende Sichten verbleiben der Web-Oberfläche oder werden im Launcher aggregiert. Service-übergreifende Navigation erfolgt nativ über OS-Deep-Links in org.sxty9.holistic.<targetId>.
-- **Der Installationszustand der Launcher-App ist rein** — Der Installationszustand der Launcher-App ist rein client-seitig und gilt pro Gerät; er ist nie account- oder servergebunden und wird nicht über Geräte synchronisiert.
-- **Der Service-Katalog des Launchers blendet Dienste aus, zu** — Der Service-Katalog des Launchers blendet Dienste aus, zu denen der gekoppelte User keine Rechte besitzt bzw. die nicht serviceVisibleByDefault sind; die rechteunabhängige Installations-Wahrheit bleibt davon unberührt.
-- **Jeder Service wird als eigenständige App ausgeliefert** — Jeder Service wird als eigenständige App ausgeliefert (Bundle-ID org.sxty9.holistic.<serviceId>); die "Holistic"-App ist Launcher und App-Manager (Bundle-ID org.sxty9.holistic.launcher). Der native App-Name ist der statische ServicePlugin.displayName; er wird nicht pro Locale lokalisiert (der Contract führt keinen i18n-Key dafür). i18n gilt für die Laufzeit-Inhalte der App.
-- **Konfiguration wird zentral im Launcher/App-Manager** — Konfiguration wird zentral im Launcher/App-Manager gebündelt geführt (analog zum Privilege Service im Web), nicht in den einzelnen Service-Apps. Falsch in einer Service-App platzierte Konfiguration ist dorthin umzuordnen.
+- **Eigenständige Apps** — Jeder Service wird als eigenständige App ausgeliefert; die Bundle-ID folgt der umgekehrten Domain-Notation <org>.holistic.<serviceId>. Die Launcher-App ist zugleich App-Manager (<org>.holistic.launcher). Der native App-Name ist der statische Anzeige-Name des Service-Plugins und wird nicht pro Sprache lokalisiert; Internationalisierung gilt für die Laufzeit-Inhalte der App, nicht für ihren Namen.
+- **Installation pro Gerät** — Der Installationszustand der Launcher-App ist rein client-seitig und gilt pro Gerät. Er ist nie account- oder servergebunden und wird nicht zwischen Geräten synchronisiert.
+- **Katalog nach Rechten** — Der Service-Katalog des Launchers blendet Dienste aus, zu denen der gekoppelte User keine Rechte besitzt oder die nicht standardmäßig sichtbar sind. Die rechteunabhängige Installations-Wahrheit bleibt davon unberührt.
+- **Kein Web-Tab-Modell** — Das Web-Tab-Modell — mehrere Services gestalten einen gemeinsamen Tab mit — bleibt für die Web-Oberfläche verbindlich. Auf Mobil bildet jede Service-App ausschließlich den eigenen Service-Beitrag ab; service-übergreifende Sichten verbleiben in der Web-Oberfläche oder werden im Launcher aggregiert. Service-übergreifende Navigation erfolgt nativ über OS-Deep-Links in <org>.holistic.<targetId>.
+- **Zentrale Konfiguration** — Konfiguration wird auf Mobil zentral im Launcher/App-Manager gebündelt geführt (analog zur zentralen Rechteverwaltung im Web), nicht in den einzelnen Service-Apps. Falsch in einer Service-App platzierte Konfiguration wird dorthin umgeordnet.
 
-### prozess
-- **Deploy-Disziplin** — Deploy-Disziplin: Ein neuer Service, ein Feature oder ein Bugfix wird unmittelbar live deployt. Signalisiert der Tonfall des Users, dass der Stand behalten wird oder zum nächsten Feature/Bug übergegangen wird, erfolgt zusätzlich automatisch der Push auf main (mainpush). Dies ist eine konkrete Vorgehensweise WÄHREND der Implementierung, keine nachträgliche Prüfung.
-- **Implementierungssprache** — Implementierungssprache: Implementiere ausschließlich in Englisch. Holistic ist multilingual, doch die Übersetzung in alle weiteren Sprachen erfolgt nachgelagert im Nightly Run; dies hält den Token-Verbrauch wirtschaftlich.
-- **Klärungspflicht** — Klärungspflicht: Stelle bei Architektur- und Designfragen sowie bei jeder Unklarheit umgehend Rückfragen an den User, auch ohne explizite Aufforderung im Prompt und insbesondere im Hinblick auf die strikte Einhaltung der Maximen.
+### universality
+- **CLAUDE.md gehört ins Repo** — Entwickler-orientierte Dateien wie CLAUDE.md sind stets Teil des Repos; sie tragen die verbindlichen Holistic-Axiome, die bei jeder Implementierung gelten. Dies ist die zulässige Ausnahme zur Instanz-Neutralität: Die geteilte Verfassung gehört ins Repo, Instanz-Spezifika nicht.
+- **Keine Instanz-Spezifika** — Holistic ist kein persönliches Projekt, sondern durchgehend so gestaltet, dass jede Organisation es betreiben kann. Kein Artefakt in den Repos bezieht sich auf eine konkrete Instanz: keine persönlichen Daten, keine hartcodierten nutzer- oder maschinenspezifischen Pfade, keine instanz-eigenen Domains. Instanz-Spezifika leben ausschließlich in der Laufzeit-Konfiguration.
 
-### umgebung
-- **Account-Löschung** — Account-Löschung: Konsolidiere Optionen und definiere explizit, wie noch gespeicherte Userdaten behandelt werden
-- **Dienste, zu denen ein User keine Rechte besitzt, sollen im** — Dienste, zu denen ein User keine Rechte besitzt, sollen im Dashboard ausgeblendet werden
-- **Konfiguration** — Konfiguration: Jeder Service stellt eine Konfigurationsschnittstelle bereit. Sämtliche Konfiguration und Einstellung (insbesondere durch Admins) erfolgt gebündelt im Holistic Dashboard in einem eigenen Tab, analog zur zentralen Rechteverwaltung (Privilege Service), jedoch für Konfigurationen statt Rechte. Falsch eingeordnete Konfiguration ist umgehend nach diesem Prinzip umzuordnen. In den Service-Tabs steht die User-Experience im Zentrum; sie dürfen nicht mit Konfiguration überflutet werden
-- **Rechtsklick-Menüs** — Rechtsklick-Menüs: Wo ein Kontextmenü sich sinnvoll anbietet, ist es auch zu implementieren — mit sinnvollen, aber nicht überflüssigen Auswahlmöglichkeiten und Funktionen (im Einklang mit der Minimalism-Maxime)
-- **Server-Umgebung** — Server-Umgebung: Passwordless sudo ist für Claude auf dem Server aktiviert; dies ist beim Implementieren generell vorauszusetzen
-- **Tabs sind NICHT an die jeweiligen Holistic Services gebunden** — Tabs sind NICHT an die jeweiligen Holistic Services gebunden: n-viele Services können den gleichen Tab mitgestalten, die Holistic-Umgebung muss dies unterstützen
-- **Zustandserhalt beim Reload** — Zustandserhalt beim Reload: Lädt der User eine Website neu, ist der zuvor gewählte Tab bzw. die zuvor gewählte Ansicht wiederherzustellen, damit er an derselben Stelle weiterarbeiten kann
+## Implementierungsregeln
+
+### communication
+- **Axiome und Regeln automatisch einpflegen** — Wenn durch den Tonfall des Users angeleitet wird, dass etwas ein generelles Axiom oder Implementierungsregel sein soll, dann diese automatisch hier in Mercury sinnvoll hineinhießen und der User über das Hinzufügen der Regel / des Axioms benachrichtigen. Desweiteren wird das neue Axiom automatisch einem vorhandenem oder neuem Lauf zugeordnet, und der User wird darüber benachrichtigt (und kann ggf. nachträglich nachjustieren)
+- **Erklären nach Feynman** — Kommuniziere mit dem User auf seinem Niveau. Er hat ein gutes Grundverständnis von Softwareentwicklung, kennt aber nicht jede Feinheit und nicht jeden Fachbegriff — besonders nicht die spezifischen Begriffe einzelner Frameworks. Überflute ihn nicht mit unnötig technischen Formulierungen oder Detailwissen.  Erklärst du etwas, dann grundlegend, einfach verständlich und dennoch technisch korrekt. Stütze jede Erklärung auf eine eingängige Analogie, die den Kern greifbar macht (Feynman-Methode: ein Prinzip so erklären, dass es ohne Vorwissen einleuchtet).
+- **user-antwort** — Zusammenfassungen/Antworten kann den Usern sind kurz und knapp und folgen klarer Struktur: Live & deployed; noch nicht gepusht; Antworten auf Fragen (falls User fragen stellt)
+
+### environment
+- **Passwordless sudo vorausgesetzt** — Passwordless sudo ist für Claude auf dem Server aktiviert; dies ist beim Implementieren generell vorauszusetzen
+
+### process
+- **Deploy-Disziplin** — Ein neuer Service, ein Feature oder ein Bugfix wird unmittelbar live deployt. Signalisiert der Tonfall des Users, dass der Stand behalten wird oder zum nächsten Feature/Bug übergegangen wird, erfolgt zusätzlich automatisch der Push auf main (mainpush). Dies ist eine konkrete Vorgehensweise WÄHREND der Implementierung, keine nachträgliche Prüfung.
+- **Implementierung auf Englisch** — Implementiere ausschließlich in Englisch. Holistic ist multilingual, doch die Übersetzung in alle weiteren Sprachen erfolgt nachgelagert im Nightly Run; dies hält den Token-Verbrauch wirtschaftlich.
+- **Klärungspflicht** — Stelle bei Architektur- und Designfragen sowie bei jeder Unklarheit umgehend Rückfragen an den User, auch ohne explizite Aufforderung im Prompt und insbesondere im Hinblick auf die strikte Einhaltung der Maximen.
+- **Mehrere Anforderungen ohne Rückbestätigung umsetzen** — Übermittelt der Nutzer mehrere Anforderungen in separaten Prompts, sind diese unmittelbar umzusetzen, ohne zuvor eine erneute Bestätigung einzuholen.
+
+### (allgemein)
+- **Self-Healing** — Holistic ist self-healing: Werden beim Implementieren oder Testen Komplikationen, Fehler oder Bugs aufgedeckt, sind diese automatisch mitzufixen.
 <!-- END HOLISTIC AXIOMS -->
