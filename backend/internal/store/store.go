@@ -160,6 +160,11 @@ func (s *Store) List(user string, limit int) ([]Notification, int, error) {
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
+	// Hold the write lock so the rows and the unread count are read as one snapshot: otherwise a
+	// concurrent Emit or MarkRead committing between the two queries would return a list and an
+	// unread count that disagree (an observable torn read).
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	rows, err := s.db.Query(
 		`SELECT seq,id,service,title,body,url,icon,level,created,read_at FROM notifications WHERE user=? ORDER BY seq DESC LIMIT ?`,
 		user, limit,
