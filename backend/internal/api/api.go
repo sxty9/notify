@@ -31,10 +31,10 @@ const (
 
 	maxBody = 1 << 16 // 64 KiB: notifications are small
 
-	maxTitle = 200
+	maxTitle     = 200
 	maxBodyRunes = 2000
-	maxURL   = 1000
-	maxIcon  = 16
+	maxURL       = 1000
+	maxIcon      = 16
 )
 
 var validLevels = map[string]bool{"info": true, "success": true, "warning": true, "error": true}

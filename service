@@ -239,6 +239,13 @@ cmd_lifecycle() {
     || die "'$action $SERVICE_ID' failed — installed? run 'sudo $0 setup'"
 }
 
+cmd_update() {
+  require_id
+  log "pulling latest..."
+  git -C "$REPO_ROOT" pull --ff-only
+  cmd_setup
+}
+
 cmd_status() {
   require_id
   local state; state="$(systemctl is-active "$SERVICE_ID" 2>/dev/null || true)"
@@ -284,6 +291,7 @@ Usage:
   sudo ./service build            Rebuild the Go daemon only, then restart if running
   sudo ./service start|stop|restart   Control the daemon
   ./service status                Show daemon, route, rights and secret health
+  sudo ./service update           git pull --ff-only + re-run setup
   sudo ./service uninstall [--purge]  Remove (--purge also drops the user + $SERVICE_APP)
   ./service help | version
 
@@ -300,6 +308,7 @@ main() {
     build)                cmd_build "$@" ;;
     start|stop|restart)   cmd_lifecycle "$cmd" ;;
     status)               cmd_status "$@" ;;
+    update)               cmd_update "$@" ;;
     uninstall)            cmd_uninstall "$@" ;;
     version|-v|--version) echo "holistic notify $TEMPLATE_VERSION" ;;
     help|-h|--help)       cmd_help ;;
